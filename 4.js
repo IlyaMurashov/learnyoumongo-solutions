@@ -1,23 +1,20 @@
 const mongo = require('mongodb').MongoClient;
 
 mongo.connect('mongodb://localhost:27017/learnyoumongo', (err, db) => {
-  if (err) {
-    return console.err(err);
-  }
+  if (err) throw err;
 
-  const parrots = db.collection('parrots');
-  parrots.find({
-    age: { $gt: parseInt(process.argv[2]) }
-  }, {
-    name: 1,
-    age: 1,
-    _id: 0
-  }).toArray((err, docs) => {
-    if (err) {
-      return console.err(err);
-    }
+  const docs = db.collection('docs');
+  docs.insertOne({
+    firstName: process.argv[2],
+    lastName: process.argv[3]
+  });
 
-    console.log(docs);
+  docs.find({
+    firstName: process.argv[2]
+  }).toArray((err, entries) => {
+    if (err) throw err;
+
+    entries.forEach( e => console.log(JSON.stringify(e)) );
   });
 
   db.close();
